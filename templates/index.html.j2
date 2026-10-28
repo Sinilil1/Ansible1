@@ -1,0 +1,14 @@
+
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ ansible_hostname }} veebileht</title>
+</head>
+<body>
+    <h1>Tere tulemast minu veebiserverisse!</h1>
+
+    <p>Serveri hostinimi: {{ ansible_hostname }}</p>
+    <p>Serveri IP-aadress: {{ ansible_default_ipv4.address }}</p>
+</body>
+</html>
