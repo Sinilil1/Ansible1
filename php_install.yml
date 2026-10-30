@@ -1,0 +1,75 @@
+
+---
+- hosts: webservers
+  tasks:
+    - name: install php apt
+      apt:
+        name: php
+        update_cache: yes
+        state: latest
+      when: ansible_os_family == "Debian"
+
+    - name: insall php dnf
+      dnf:
+        name: php
+        update_cache: yes
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+
+    - name: install apache2 apt
+      apt:
+        name: libapache2-mod-php
+        update_cache: yes
+        state: latest
+      when: ansible_os_family == "Debian"
+
+    - name: insall apache2 dnf
+      dnf:
+        name: httpd
+        update_cache: yes
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+
+
+    - name: install php-mysql apt
+      apt:
+        name: php-mysql
+        update_cache: yes
+        state: latest
+      when: ansible_os_family == "Debian"
+
+    - name: insall php-mysql dnf
+      dnf:
+        name: php-mysqlnd
+        update_cache: yes
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+
+
+    - name: create info.php
+      copy:
+        dest: /var/www/html/info.php
+        content: |
+          <?php
+          phpinfo();
+          ?>
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: start apache2
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+      when: ansible_os_family == "Debian"
+
+    - name: start httpd
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+      when: ansible_os_family == "RedHat"

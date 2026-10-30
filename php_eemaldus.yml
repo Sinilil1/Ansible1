@@ -1,0 +1,27 @@
+
+---
+
+- hosts: webservers
+  tasks:
+    - name: uninstall php dnf
+      dnf:
+        name:
+          - php
+          - php-cli
+          - php-common
+          - php-fpm
+          - php-mysqlnd
+        state: absent
+      when: ansible_os_family == "RedHat"
+
+    - name: uninstall php apt
+      apt:
+        name:
+          - php
+          - php-cli
+          - php-common
+          - php-fpm
+          - php-mysql
+        state: absent
+        purge: yes
+      when: ansible_os_family == "Debian"
