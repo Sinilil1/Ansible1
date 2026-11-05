@@ -1,0 +1,42 @@
+---
+- hosts: debian
+  tasks:
+
+    - name: Enable mysql_native_password plugin
+      ansible.builtin.lineinfile:
+        path: /etc/mysql/mysql.conf.d/mysqld.cnf
+        regexp: '^mysql_native_password'
+        line: 'mysql_native_password=ON'
+        insertafter: '^\[mysqld\]'
+      notify: Restart MySQL
+
+    - name: Apply MySQL configuration
+      ansible.builtin.meta: flush_handlers
+
+    - name: Set MySQL root password
+      community.mysql.mysql_user:
+        name: root
+        host: localhost
+        password: qwerty
+        priv: '*.*:ALL,GRANT'
+        state: present
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        check_implicit_admin: yes
+
+    - name: Create MySQL root configuration file
+      ansible.builtin.copy:
+        dest: /root/.my.cnf
+        owner: root
+        group: root
+        mode: '0600'
+        content: |
+          [client]
+          user=root
+          password=qwerty
+
+
+  handlers:
+    - name: Restart MySQL
+      ansible.builtin.service:
+        name: mysql
+        state: restarted
