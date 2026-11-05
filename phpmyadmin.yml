@@ -1,0 +1,34 @@
+---
+
+- name: Phph myadmini paigaldamine ja seadistus debian 13 serveris
+  hosts: debian
+  become: yes
+
+  tasks:
+    - name: pakettide nimekirja uuendus
+      apt:
+        update_cache: yes
+
+    - name: phpmyadmin paigaldus
+      apt:
+        name: phpmyadmin
+        state: present
+
+
+    - name: lingi tegemine et myphpadmini failid oleksid kättesaadavad apache2 kataloogis
+      file:
+        src: /usr/share/phpmyadmin
+        dest: /var/www/html/phpmyadmin
+        state: link
+
+    - name: apache2 restart
+      service:
+        name: apache2
+        state: restarted
+
+    - name: Veendume, et Apache töötab ja phpmyadmin on ligipääsetav
+      uri:
+        url: http://localhost/phpmyadmin
+        return_content: no
+      register: phpmyadmin_status
+      failed_when: "'200' not in phpmyadmin_status.status | string"
